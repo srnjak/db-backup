@@ -30,7 +30,7 @@ This script is a bash script for automating MySQL database backups. It allows yo
     cd db-backup-tool
     ```
 
-3. Modify the configuration files in the `config/` directory to match your MySQL server settings and backup preferences.
+3. Modify the configuration files in the `/etc/db-backup` directory to match your MySQL server settings and backup preferences. The directory containing configurations might also be configured.
 
 4. Run the script with the following command:
 
@@ -38,7 +38,7 @@ This script is a bash script for automating MySQL database backups. It allows yo
     ./backup.sh [--retention [daily/weekly/monthly/yearly]] [config_name]
     ```
 
-    The `config_name` argument is optional. If not specified, the script will run all configuration files in the `config/` directory.
+    The `config_name` argument is optional. If not specified, the script will run all configuration files in the `/etc/db-backup` directory.
 
     The `--retention` switch is optional. If specified, it accepts one of the following values as an argument: `daily`, `weekly`, `monthly`, `yearly`. This argument will be used as a suffix in the subdirectory name. The retention option allows you to specify which retention policy to apply. This determines when and which old backups should be deleted.
 
