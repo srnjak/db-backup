@@ -52,7 +52,7 @@ while [[ "$#" -gt 0 ]]; do
         -h|--help)
             HELP_FLAG=1
             ;;
-        *)
+        -*)
             # If unknown option or argument is given, print help message and exit
             print_help
             exit 1
@@ -76,7 +76,7 @@ fi
 
 # Validate retention policy option
 if [[ -v RETENTION_POLICY ]] && \
-   [[ $RETENTION_POLICY =~ ^(daily|weekly|monthly|yearly)$ ]]; then
+   ! [[ $RETENTION_POLICY =~ ^(daily|weekly|monthly|yearly)$ ]]; then
     echo "Error: Invalid retention policy option. Valid options are 'daily', 'weekly', 'monthly', or 'yearly'." >&2
     exit 1
 fi
