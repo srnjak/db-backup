@@ -1,0 +1,8 @@
+bash/db-backup:usr/bin
+
+# Configuration examples
+doc/examples/*:usr/share/doc/db-backup/examples
+
+# Debian specific
+debian/preinst:DEBIAN
+debian/postrm:DEBIAN
