@@ -2,6 +2,6 @@ Package: {{package}}
 Version: {{version}}
 Architecture: all
 Maintainer: {{maintainer}}
-Depends: mariadb-client | mysql-client
+Depends: mariadb-client | mysql-client, gzip
 Suggests: mailutils, purge-backups
 Description: {{description}}
