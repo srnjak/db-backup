@@ -48,13 +48,12 @@ This script is a bash script for automating MySQL database backups. It allows yo
 
 Each configuration file in the `config/` directory represents a set of databases to be backed up. The configuration files are Bash shell scripts that define several variables:
 
-- `BACKUP_DIR`: The directory where backups will be stored.
-- `BACKUP_SUBDIR_PREFIX`: The prefix to use for the backup subdirectory name.
-- `DB_NAMES`: An array of MySQL database names to backup.
 - `DB_HOST`: The hostname or IP address of the MySQL server.
 - `DB_PORT`: The port number of the MySQL server.
 - `DB_USER`: The username for the MySQL server.
 - `DB_PASSWORD`: The password for the MySQL server.
+- `BACKUP_DIR`: The directory where backups will be stored.
+- `DB_NAMES`: An array of MySQL database names to backup.
 
 ## License
 
