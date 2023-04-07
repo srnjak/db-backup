@@ -21,13 +21,13 @@ This script is a bash script for automating MySQL database backups. It allows yo
 1. Clone the repository to your local machine:
 
     ```
-    git clone https://github.com/srnjak/db-backup-tool.git
+    git clone https://github.com/srnjak/db-backup.git
     ```
 
 2. Navigate to the repository directory:
 
     ```
-    cd db-backup-tool
+    cd db-backup
     ```
 
 3. Modify the configuration files in the `/etc/db-backup` directory to match your MySQL server settings and backup preferences. The directory containing configurations might also be configured.
@@ -35,7 +35,7 @@ This script is a bash script for automating MySQL database backups. It allows yo
 4. Run the script with the following command:
 
     ```
-    ./db-backup-tool.sh [--retention [daily/weekly/monthly/yearly]] [config_name]
+    ./db-backup [--retention [daily/weekly/monthly/yearly]] [config_name]
     ```
 
     The `config_name` argument is optional. If not specified, the script will run all configuration files in the `/etc/db-backup` directory.
