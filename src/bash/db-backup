@@ -15,9 +15,11 @@ Positional arguments:
   config_name          Name of the configuration to use. If not specified, all files in the configurations directory with the .cfg extension will be used.
 
 Optional arguments:
-  -c, --config-dir            The path to directory containing configurations. (default: $CONFIG_DIRECTORY)
-  -r, --retention POLICY      Retention policy type. Possible values: daily, weekly, monthly, yearly. If set, the value will be used as a suffix in the subdirectory name.
-  -h, --help                  Print this help message and exit.
+  -c, --config-dir         The path to directory containing configurations. (default: $CONFIG_DIRECTORY)
+  -r, --retention POLICY   Retention policy type. Possible values: daily, weekly, monthly, yearly. If set, the value will be used as a suffix in the subdirectory name.
+  -m, --send-mail          Send an email notification after the backup is complete.
+                           If this flag is set, make sure to set the email address in the configuration file.
+  -h, --help               Print this help message and exit.
 
 This script reads configuration files from the "config" directory located in the same directory as the script.
 
@@ -68,25 +70,29 @@ function log {
 
 # Loop through options and assign values
 while [[ "$#" -gt 0 ]]; do
-    case $1 in
-        -c|--config-dir)
-            CONFIG_DIRECTORY="$2"
-            shift
-            ;;
-        -r|--retention)
-            RETENTION_POLICY="$2"
-            shift
-            ;;
-        -h|--help)
-            HELP_FLAG=1
-            ;;
-        -*)
-            # If unknown option or argument is given, print help message and exit
-            print_help
-            exit 1
-            ;;
-    esac
-    shift
+  case $1 in
+    -c|--config-dir)
+        CONFIG_DIRECTORY="$2"
+        shift
+        ;;
+    -r|--retention)
+        RETENTION_POLICY="$2"
+        shift
+        ;;
+    -m|--send-mail)
+        SEND_MAIL=true
+        shift
+        ;;
+    -h|--help)
+        HELP_FLAG=1
+        ;;
+    -*)
+        # If unknown option or argument is given, print help message and exit
+        print_help
+        exit 1
+        ;;
+  esac
+  shift
 done
 
 # If help flag is set, print help message and exit
@@ -152,7 +158,11 @@ for CONFIG_FILE in ${CONFIG_FILES[@]}; do
     write "Backup name  : $BACKUP_NAME"
     write "Database     : $DB_HOST:$DB_PORT"
     write "Backup dir   : $BACKUP_SUBDIR_FULL"
-    write "***************************************\n"
+    write " "
+    write "E-mail (from): $EMAILFROM"
+    write "E-mail (to)  : $EMAILTO"
+    write "***************************************"
+    write ""
 
     # Create backup subdirectory
     mkdir -p "$BACKUP_SUBDIR_FULL"
@@ -195,7 +205,12 @@ for CONFIG_FILE in ${CONFIG_FILES[@]}; do
     done
 
     # Print completion message
-    write "Backups of $BACKUP_NAME completed to: $BACKUP_SUBDIR_FULL"
+    write "\nBackups of $BACKUP_NAME completed to: $BACKUP_SUBDIR_FULL"
+
+    # size data
+    write "Backup size: \c"
+    SIZE=$(du -hs "$BACKUP_SUBDIR_FULL" | awk '{print $1}')
+    write "$SIZE"
 
     cp "$LOG_FILE" "$BACKUP_SUBDIR_FULL/db-backup.log"
 
@@ -206,7 +221,16 @@ if [ ${#FAILED_BACKUPS[@]} -eq 0 ]; then
     write "\nAll database backups completed successfully."
 else
     write "\n${#FAILED_BACKUPS[@]} backups failed:"
+    OUTCOME="FAILED"
     for failed_backup in "${FAILED_BACKUPS[@]}"; do
         write "$failed_backup"
     done
+fi
+
+# sending mail
+SUMMARY="[db-backup] $BACKUP_NAME ($SIZE) $OUTCOME"
+if [[ "$SEND_MAIL" == true ]]; then
+  # sending mail
+  cat $LOG_FILE | mail -s "$SUMMARY" -a "From: $EMAILFROM" $EMAILTO
+
 fi
