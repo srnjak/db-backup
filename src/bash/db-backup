@@ -7,35 +7,33 @@ HELP_FLAG=0
 # Define function to print out help message
 print_help() {
     cat <<EOF
-Usage: $0 [-h] [-r retention_policy] [config_name]
+Usage: $0 [options] <config_name>
 
 Creates a backup of all databases specified in the configuration file.
 
 Positional arguments:
   config_name          Name of the configuration to use. If not specified, all files in the configurations directory with the .cfg extension will be used.
 
-Optional arguments:
+Options:
   -c, --config-dir         The path to directory containing configurations. (default: $CONFIG_DIRECTORY)
   -r, --retention POLICY   Retention policy type. Possible values: daily, weekly, monthly, yearly. If set, the value will be used as a suffix in the subdirectory name.
   -m, --send-mail          Send an email notification after the backup is complete.
                            If this flag is set, make sure to set the email address in the configuration file.
   -h, --help               Print this help message and exit.
 
-This script reads configuration files from the "config" directory located in the same directory as the script.
-
 The configuration files are shell scripts that define the following variables:
-  - DB_NAMES        An array of MySQL database names to backup
-  - DB_HOST         The hostname or IP address of the MySQL server
-  - DB_PORT         The port number of the MySQL server
-  - DB_USER         The username to use when connecting to the MySQL server
-  - DB_PASSWORD     The password to use when connecting to the MySQL server
+  - DB_NAMES        An array of database names to backup
+  - DB_HOST         The hostname or IP address of the database server
+  - DB_PORT         The port number of the database server
+  - DB_USER         The username to use when connecting to the database server
+  - DB_PASSWORD     The password to use when connecting to the database server
   - BACKUP_DIR      The directory where the backups will be stored
 
 Examples:
   $0                  # Creates a backup using all the configuration files.
   $0 mydb             # Creates a backup using the specified configuration file "mydb.cfg".
   $0 -r daily         # Creates a backup using all the configuration files and use a "daily" retention policy.
-  $0 -r weekly mydb   # Creates a backup using the specified configuration file "mydb.cfg" and use a "weekly" retention policy.
+  $0 -r weekly -m mydb   # Creates a backup using the specified configuration file "mydb.cfg" and use a "weekly" retention policy, and send an email notification after the backup is complete.
   $0 -h               # Prints this help message.
 EOF
 }
