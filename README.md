@@ -1,12 +1,13 @@
 # Database Backup Script
 
-This script is a bash script for automating MySQL database backups. It allows you to backup one or more databases to a specified directory, while also keeping a specified number of backups and deleting older backups. Additionally, it provides a summary of which databases were successfully backed up and which ones failed.
+A bash script that creates a backup of all databases specified in the configuration file. 
+It is designed to be a general-purpose backup tool that can be used to back up any MariaDB or MySQL database with minimal configuration. 
+The script is used to automate the backup process and can be scheduled to run at specific intervals, making it a useful tool for system administrators who want to ensure that their databases are backed up regularly.
 
 ## Features
 
-- Backup one or more MySQL databases
+- Backup one or more MariaDB or MySQL databases
 - Store backups in a specified directory
-- Keep a specified number of backups and delete older backups
 - Log and track failed backups
 - Easy to use and configure
 
@@ -16,45 +17,79 @@ This script is a bash script for automating MySQL database backups. It allows yo
 - MySQL server installed
 - Bash shell (default on most Linux-based operating systems)
 
-## Getting Started
+## Usage
 
-1. Clone the repository to your local machine:
+Syntax:
 
-    ```
-    git clone https://github.com/srnjak/db-backup.git
-    ```
+    db-backup [-c CONFIG_DIR][-r RETENTION_POLICY][-m] CONF_NAME
+    db-backup -h
 
-2. Navigate to the repository directory:
+### Options
 
-    ```
-    cd db-backup
-    ```
-
-3. Modify the configuration files in the `/etc/db-backup` directory to match your MySQL server settings and backup preferences. The directory containing configurations might also be configured.
-
-4. Run the script with the following command:
-
-    ```
-    ./db-backup [--retention [daily/weekly/monthly/yearly]] [config_name]
-    ```
-
-    The `config_name` argument is optional. If not specified, the script will run all configuration files in the `/etc/db-backup` directory.
-
-    The `--retention` switch is optional. If specified, it accepts one of the following values as an argument: `daily`, `weekly`, `monthly`, `yearly`. This argument will be used as a suffix in the subdirectory name. The retention option allows you to specify which retention policy to apply. This determines when and which old backups should be deleted.
-
-5. Check the output to verify that the backups completed successfully.
+| Short option | Long option    | Description                                                                                                                                  | Default Value    |
+|--------------|----------------|----------------------------------------------------------------------------------------------------------------------------------------------|------------------|
+| `-c`         | `--config-dir` | The path to directory containing configurations.                                                                                             | `/etc/db-backup` |
+| `-r`         | `--retention`  | Retention policy type. Possible values: daily, weekly, monthly, yearly. If set, the value will be used as a suffix in the subdirectory name. |                  |
+| `-m`         | `--send-mail`  | Send an email notification after the backup is complete. If this flag is set, make sure to set the email address in the configuration file.  |                  |
+| `-h`         | `--help`       | Print help message and exit.                                                                                                                 |                  |
 
 ## Configuration
+Each configuration file should have a ".cfg" extension and contain the following variables:
 
-Each configuration file in the `config/` directory represents a set of databases to be backed up. The configuration files are Bash shell scripts that define several variables:
+- `DB_NAMES` - an array of database names to backup
+- `DB_HOST` - the hostname or IP address of the database server
+- `DB_PORT` - the port number of the database server
+- `DB_USER` - the username to use when connecting to the database server
+- `DB_PASSWORD` - the password to use when connecting to the database server
+- `BACKUP_DIR` - the directory where the backups will be stored
 
-- `BACKUP_DIR`: The directory where backups will be stored.
-- `BACKUP_SUBDIR_PREFIX`: The prefix to use for the backup subdirectory name.
-- `DB_NAMES`: An array of MySQL database names to backup.
-- `DB_HOST`: The hostname or IP address of the MySQL server.
-- `DB_PORT`: The port number of the MySQL server.
-- `DB_USER`: The username for the MySQL server.
-- `DB_PASSWORD`: The password for the MySQL server.
+## Installation
+
+### Add `srnjak` apt source
+
+To add the `srnjak` apt source to your system, follow these steps:
+
+1. Update the package index:
+    ```
+    sudo apt-get update
+    ```
+
+2. Install the required packages:
+    ```
+    sudo apt-get install -y ca-certificates gnupg2 curl
+    ```
+
+3. Add the `srnjak` repository to your system's package sources:
+    ```
+    echo "deb https://ci.srnjak.com/nexus/repository/apt-release release main" | sudo tee /etc/apt/sources.list.d/srnjak.list
+    ```
+
+4. Add the repository's GPG key to your system's trusted keys:
+    ```
+    curl -sSL https://ci.srnjak.com/nexus/repository/public/gpg/public.gpg.key | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/srnjak.gpg
+    ```
+
+### Install `db-backup`
+
+To install the `db-backup` package, follow these steps:
+
+1. Update the package index again:
+    ```
+    sudo apt-get update
+    ```
+
+2. Install the `db-backup` package:
+    ```
+    sudo apt-get install -y db-backup
+    ```
+## Dependencies
+The script uses the following dependencies:
+
+- `gzip`
+- `mailutils` (optional)
+
+Note: The script will work without `mailutils`, but won't be able to send mail after the backup process is done. 
+`gzip` is required for compressing and archiving the backup files.
 
 ## License
 
