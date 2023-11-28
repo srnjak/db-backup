@@ -1,0 +1,48 @@
+#!/bin/bash
+
+set -e
+
+FILES_BACKUP_SCRIPT="db-backup"
+SCHEDULER_SCRIPT="backup-scheduler"
+CONFIG="/etc/db-backup/_schedule.cfg"
+
+case "$1" in
+    configure)
+        # Add the cronjobs to the current user's crontab if not already present
+        if ! crontab -l | grep -q "$CONFIG # Db backup - Daily"; then
+            (crontab -l 2>/dev/null || true; echo "45 2 * * * $SCHEDULER_SCRIPT -e $FILES_BACKUP_SCRIPT -r daily -c $CONFIG # Db backup - Daily - DO NOT CHANGE!") | crontab -
+        else
+            echo "Daily cronjob already exists. Skipping addition."
+        fi
+
+        if ! crontab -l | grep -q "$CONFIG # Db backup - Weekly"; then
+            (crontab -l 2>/dev/null || true; echo "45 3 * * 0 $SCHEDULER_SCRIPT -e $FILES_BACKUP_SCRIPT -r weekly -c $CONFIG # Db backup - Weekly - DO NOT CHANGE!") | crontab -
+        else
+            echo "Weekly cronjob already exists. Skipping addition."
+        fi
+
+        if ! crontab -l | grep -q "$CONFIG # Db backup - Monthly"; then
+            (crontab -l 2>/dev/null || true; echo "45 4 1 * * $SCHEDULER_SCRIPT -e $FILES_BACKUP_SCRIPT -r monthly -c $CONFIG # Db backup - Monthly - DO NOT CHANGE!") | crontab -
+        else
+            echo "Monthly cronjob already exists. Skipping addition."
+        fi
+
+        if ! crontab -l | grep -q "$CONFIG # Db backup - Yearly"; then
+            (crontab -l 2>/dev/null || true; echo "45 5 1 1 * $SCHEDULER_SCRIPT -e $FILES_BACKUP_SCRIPT -r yearly -c $CONFIG # Db backup - Yearly - DO NOT CHANGE!") | crontab -
+        else
+            echo "Yearly cronjob already exists. Skipping addition."
+        fi
+
+        # Enable the cron service
+        update-rc.d cron enable || true
+
+        # Restart the cron service (optional)
+        service cron restart || true
+        ;;
+    *)
+        # Do nothing on other actions
+        exit 0
+        ;;
+esac
+
+exit 0
