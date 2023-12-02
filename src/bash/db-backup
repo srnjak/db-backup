@@ -158,8 +158,6 @@ for CONFIG_FILE in ${CONFIG_FILES[@]}; do
     fi
     BACKUP_SUBDIR_FULL="$BACKUP_DIR/$BACKUP_SUBDIR"
 
-    clear
-
     write "***************************************"
     write "DATABASE BACKUP CREATION"
     write "***************************************"
