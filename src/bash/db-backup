@@ -204,7 +204,7 @@ for CONFIG_FILE in ${CONFIG_FILES[@]}; do
         # Print backup end message
         if [[ ${PIPESTATUS[0]} -eq 0 ]]; then
             du -h "$BACKUP_FILE" | awk '{print $1}'
-            echo du -h "$BACKUP_FILE" | awk '{print $1}'
+            echo "du -h \"$BACKUP_FILE\" | awk '{print $1}'"
             write "\033[32mdone\033[0m ($(du -h "$BACKUP_FILE" | awk '{print $1}'))"
         else
             # Add failed backup's information to the array
